@@ -203,9 +203,7 @@ public class LTDispatcherServlet extends HttpServlet {
                         //以接口的类名作为id放入。
                         iocMap.put(anInterface.getName(),aClass.newInstance());
                     }
-                }else {
-                    continue;
-                }
+                }else { continue; }
             }
         }catch (Exception e){
             e.printStackTrace();
