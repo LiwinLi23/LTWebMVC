@@ -185,7 +185,7 @@ public class LTDispatcherServlet extends HttpServlet {
                     String lowerFirstSimpleName = lowerFirst(simpleName); //demoController
                     Object bean = aClass.newInstance();
                     iocMap.put(lowerFirstSimpleName,bean);
-                } else if (aClass.isAnnotationPresent(LTService.class)){
+                } else if (aClass.isAnnotationPresent(LTService.class)) {
                     LTService annotation = aClass.getAnnotation(LTService.class);
                     //获取注解的值
                     String beanName = annotation.value();
@@ -203,7 +203,7 @@ public class LTDispatcherServlet extends HttpServlet {
                         //以接口的类名作为id放入。
                         iocMap.put(anInterface.getName(),aClass.newInstance());
                     }
-                }else { continue; }
+                } else { continue; }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -212,8 +212,9 @@ public class LTDispatcherServlet extends HttpServlet {
     //TODO 2,扫描类
     //scanPackage :    package--->磁盘的文件夹（File）
     private void doScan(String scanPackage) {
-        //1.获得classPath路径
+        System.out.println("+ doScan: " + scanPackage);
         String clasPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        System.out.println("Class path: " + clasPath);
         //2.拼接,得到scanPackage在磁盘上的路径
         String  scanPackagePath = clasPath + scanPackage.replaceAll("\\.","/");
         File pack = new File(scanPackagePath);
