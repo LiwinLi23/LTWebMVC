@@ -5,6 +5,7 @@ import com.liwinli.edu.springmvc.annotations.LTController;
 import com.liwinli.edu.springmvc.annotations.LTRequestMapping;
 import com.liwinli.edu.springmvc.annotations.LTService;
 import com.liwinli.edu.springmvc.pojo.Handler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletConfig;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class LTDispatcherServlet extends HttpServlet {
 
     private Properties properties = new Properties();
@@ -175,12 +177,12 @@ public class LTDispatcherServlet extends HttpServlet {
     private void doInstance() {
         if (classNames.size() == 0) { return; }
 
-        try{
+        try {
             for (int i = 0; i < classNames.size(); ++i) {
                 String className = classNames.get(i);
                 Class<?> aClass = Class.forName(className);
                 if (aClass.isAnnotationPresent(LTController.class)) {
-                    System.out.println("Controller name: " + className);
+                    log.warn("Controller name: {}", className);
                     String simpleName = aClass.getSimpleName();
                     String lowerFirstSimpleName = lowerFirst(simpleName); //demoController
                     Object bean = aClass.newInstance();
