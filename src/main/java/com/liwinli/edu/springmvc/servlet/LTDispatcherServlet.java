@@ -145,7 +145,9 @@ public class LTDispatcherServlet extends HttpServlet {
     }
     //TODO 4,实现依赖注入
     private void doAutoWired() {
-        if (iocMap.isEmpty()){return;}
+        log.info("步骤4: implement DI(dependency injection)");
+        if (iocMap.isEmpty()) { return; }
+
         //1，判断容器中有没有被@DxhAutowried注解的属性，如果有需要维护依赖注入关系
         for (Map.Entry<String,Object> entry: iocMap.entrySet()){
             //获取bean对象中的字段信息
@@ -184,26 +186,25 @@ public class LTDispatcherServlet extends HttpServlet {
                 if (aClass.isAnnotationPresent(LTController.class)) {
                     log.warn("Controller name: {}", className);
                     String simpleName = aClass.getSimpleName();
-                    String lowerFirstSimpleName = lowerFirst(simpleName); //demoController
+                    String lowerFirstSimpleName = lowerFirst(simpleName);
                     Object bean = aClass.newInstance();
-                    iocMap.put(lowerFirstSimpleName,bean);
+                    iocMap.put(lowerFirstSimpleName, bean);
                 } else if (aClass.isAnnotationPresent(LTService.class)) {
                     LTService annotation = aClass.getAnnotation(LTService.class);
-                    //获取注解的值
                     String beanName = annotation.value();
-                    //指定了id就以指定的id为准
+                    log.info("注解的value是: {}", StringUtils.isNotBlank(beanName) ? beanName : "");
                     if (!"".equals(beanName.trim())){
                         iocMap.put(beanName,aClass.newInstance());
-                    }else{
-                        //没有指定id ，首字母小写
+                    }else {
                         String lowerFirstSimpleName = lowerFirst(aClass.getSimpleName());
+                        log.info("服务的名字: {}", lowerFirstSimpleName);
                         iocMap.put(lowerFirstSimpleName,aClass.newInstance());
                     }
-                    //service层往往是有接口的，再以接口名为id再存入一分bean到ioc，便于后期根据接口类型注入
+
                     Class<?>[] interfaces = aClass.getInterfaces();
-                    for (Class<?> anInterface : interfaces) {
-                        //以接口的类名作为id放入。
-                        iocMap.put(anInterface.getName(),aClass.newInstance());
+                    for (Class<?> curInterface : interfaces) {
+                        log.info("curInterface name: {}", curInterface.getName());
+                        iocMap.put(curInterface.getName(),aClass.newInstance());
                     }
                 } else { continue; }
             }
