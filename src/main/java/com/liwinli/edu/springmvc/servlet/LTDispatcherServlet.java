@@ -143,30 +143,30 @@ public class LTDispatcherServlet extends HttpServlet {
             }
         }
     }
-    //TODO 4,实现依赖注入
+
     private void doAutoWired() {
         log.info("步骤4: implement DI(dependency injection)");
         if (iocMap.isEmpty()) { return; }
 
-        //1，判断容器中有没有被@DxhAutowried注解的属性，如果有需要维护依赖注入关系
-        for (Map.Entry<String,Object> entry: iocMap.entrySet()){
-            //获取bean对象中的字段信息
+        for (Map.Entry<String,Object> entry: iocMap.entrySet()) {
+            String classFullName = entry.getKey();
+            log.info("当前正在查看类名为:{} 的对象中是否有需要DI的声明属性", classFullName);
             Field[] declaredFields = entry.getValue().getClass().getDeclaredFields();
             for (Field declaredField : declaredFields) {
-                if (!declaredField.isAnnotationPresent(LTAutowired.class)){
-                    continue;
-                }
-                //有该注解：
+                if (!declaredField.isAnnotationPresent(LTAutowired.class)) { continue; }
+
+                log.info("{}中属性{}声明了需要DL", classFullName, declaredField.getName());
                 LTAutowired annotation = declaredField.getAnnotation(LTAutowired.class);
                 String beanName = annotation.value(); //需要注入的bean的Id
-                if ("".equals(beanName.trim())){
-                    //没有配置具体的beanId，需要根据当前字段的类型注入（接口注入）  IDemoService
+                log.info("Need inject bean name: {}", StringUtils.isNotBlank(beanName) ? beanName : "");
+                if ("".equals(beanName.trim())) {
                     beanName = declaredField.getType().getName();
+                    log.info("Use typeName: {} as beanName", beanName);
                 }
-                //开启赋值
+
                 declaredField.setAccessible(true);
                 try {
-                    //字段调用，两个参数：(哪个对象的字段，传入什么)
+                    log.info("Field:{}在对象中设置为beanName:{}对象", declaredField.getName(), beanName);
                     declaredField.set(entry.getValue(), iocMap.get(beanName));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
